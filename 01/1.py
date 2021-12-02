@@ -1,6 +1,6 @@
 #Desafio do dia 01/12/2021:
 #a) Dada uma lista de números, contar quantas vezes o número foi maior que seu antecessor.
-#b)Idem, porém para uma janela móvel de 3 números na mesma lista.
+#b) Idem, porém para uma janela móvel de 3 números na mesma lista.
 
 with open('input.txt') as file:
 	numeros = file.read().splitlines()
