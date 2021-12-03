@@ -8,7 +8,7 @@ taxaGamma = ''
 taxaEpsilon = ''
 numerosPossiveisOxigenio = numeros[:]
 numerosPossiveisCO2 = numeros[:]
-for indiceCaracter in range(len(numeros[0])): #Pelo enunciado todos tem mesmo tamanho
+for indiceCaracter in range(len(numeros[0])): #Pelo enunciado todos tem mesmo tamanho.
 	contagemDe1s = len([numero 
 			for numero in numeros 
 			if numero[indiceCaracter]=='1'])
