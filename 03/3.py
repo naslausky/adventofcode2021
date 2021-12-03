@@ -4,35 +4,27 @@
 
 with open('input.txt') as file:
 	numeros = file.read().splitlines()
-
-metadeDaQuantidadeDeNumeros = len(numeros)/2
 taxaGamma = ''
+taxaEpsilon = ''
+numerosPossiveisOxigenio = numeros[:]
+numerosPossiveisCO2 = numeros[:]
 for indiceCaracter in range(len(numeros[0])): #Pelo enunciado todos tem mesmo tamanho
 	contagemDe1s = len([numero 
 			for numero in numeros 
 			if numero[indiceCaracter]=='1'])
-	bitMaisComum = '1' if contagemDe1s > metadeDaQuantidadeDeNumeros else '0'
+	bitMaisComum = '1' if contagemDe1s > len(numeros)/2 else '0'
 	taxaGamma+=bitMaisComum
-taxaEpsilon = ''
-for digito in taxaGamma:
-	numeroInverso = '0' if digito == '1' else '1'
+	numeroInverso = '0' if bitMaisComum == '1' else '1'
 	taxaEpsilon+=numeroInverso
-taxaEpsilonBase10 = int(taxaEpsilon, 2)
-taxaGammaBase10 = int(taxaGamma,2)
-print("O consumo de energia do submarino é de:", taxaEpsilonBase10*taxaGammaBase10)
-
 #Parte 2:
-numerosPossiveisOxigenio = numeros[:]
-numerosPossiveisCO2 = numeros[:]
-for indiceCaracter in range(len(numeros[0])):
-	contagemDe1sOxigenio = len([numero 
+	contagemDe1sOxigenio = len([numero #Verificação do bit mais comum apenas dentre os números de O2 que sobraram.
 			for numero in numerosPossiveisOxigenio 
 			if numero[indiceCaracter]=='1'])
 	contagemDe1sCO2 = len([numero 
 			for numero in numerosPossiveisCO2 
 			if numero[indiceCaracter]=='1'])
-	bitMaisComumOxigenio = '1' if contagemDe1sOxigenio >= (len(numerosPossiveisOxigenio) / 2) else '0'
-	bitMenosComumCO2 = '0' if contagemDe1sCO2 >= (len(numerosPossiveisCO2) / 2) else '1'
+	bitMaisComumOxigenio = '1' if contagemDe1sOxigenio >= len(numerosPossiveisOxigenio) / 2 else '0'
+	bitMenosComumCO2 = '0' if contagemDe1sCO2 >= len(numerosPossiveisCO2) / 2 else '1'
 	if len(numerosPossiveisOxigenio) > 1:
 		numerosPossiveisOxigenio = [numero 
 						for numero in numerosPossiveisOxigenio
@@ -41,6 +33,10 @@ for indiceCaracter in range(len(numeros[0])):
 		numerosPossiveisCO2 = [numero 
 						for numero in numerosPossiveisCO2
 						if numero[indiceCaracter] == bitMenosComumCO2]
+taxaEpsilonBase10 = int(taxaEpsilon, 2)
+taxaGammaBase10 = int(taxaGamma,2)
+print("O consumo de energia do submarino é de:", taxaEpsilonBase10*taxaGammaBase10)
+#Parte 2:
 numeroFinalOxigenio = int(numerosPossiveisOxigenio[0],2)
 numeroFinalCO2 = int(numerosPossiveisCO2[0],2)
 produto = numeroFinalOxigenio * numeroFinalCO2
