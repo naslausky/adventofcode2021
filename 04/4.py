@@ -17,7 +17,7 @@ with open('input.txt') as file:
 		cartelas.append(tuple(numerosDessaCartela))
 
 numeroDeLinhas = int(len(numerosDessaCartela)**0.5) #Grid 5x5
-dicAcertos = {x:[] for x in cartelas} #Dicionário que relaciona uma cartela aos seus números já acertados.
+dicAcertos = {x:[] for x in cartelas} #Dicionário que relaciona uma cartela a uma lista dos índices de seus números já acertados.
 cartelasQueJaBateram = set() #Uma cartela que já bateu vai continuar "batendo" em sorteios subsequentes, diminuindo sua própria pontuação. 
 pontuacaoPrimeiraCartelaVencedora = 0
 pontuacaoUltimaCartelaVencedora = 0
