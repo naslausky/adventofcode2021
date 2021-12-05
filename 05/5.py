@@ -4,15 +4,20 @@
 
 with open('input.txt') as file:
 	linhas = file.read().splitlines()
-
-def qtdDeCoordenadasSobrepostas(linhas, parte2=False):
-	coordenadasPercorridas = {} # Dicionário que relaciona coordenadas (x,y) com o número de vezes que uma linha passa por cima dela.
+	linhasTratadas = []
 	for linha in linhas:
 		origem, destino = linha.split(" -> ")
 		origem = origem.split(',')
 		origem = list(map(int, origem))
 		destino = destino.split(',')
 		destino = list(map(int, destino))
+		linhasTratadas.append((origem,destino))
+	linhas = linhasTratadas
+
+def qtdDeCoordenadasSobrepostas(linhas, parte2=False):
+	coordenadasPercorridas = {} # Dicionário que relaciona coordenadas (x,y) com o número de vezes que uma linha passa por cima dela.
+	for linha in linhas:
+		origem, destino = linha
 		if not parte2: # Ignora as linhas diagonais se não for a parte 2.
 			if origem[0] != destino[0] and origem[1] != destino[1]:
 				continue
