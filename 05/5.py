@@ -1,3 +1,7 @@
+# Desafio do dia 05/12/2021
+#a) Dada uma lista de segmentos de linha em um espaço discreto, calcular quantos pontos contém mais de uma linha.
+#b) Idem porém considerando também as linhas diagonais.
+
 with open('input.txt') as file:
 	linhas = file.read().splitlines()
 
@@ -9,29 +13,18 @@ def qtdDeCoordenadasSobrepostas(linhas, parte2=False):
 		origem = list(map(int, origem))
 		destino = destino.split(',')
 		destino = list(map(int, destino))
-		
-		if origem[0] == destino[0]:
-			delta = (origem[1],destino[1])
-			for indice in range(min(delta), max(delta)+1):
-				chave = (origem[0], indice)
-				coordenadasPercorridas[chave] = coordenadasPercorridas.get(chave, 0) + 1
-		elif origem[1] == destino[1]:
-			delta = (origem[0],destino[0])
-			for indice in range(min(delta), max(delta)+1):
-				chave = (indice, origem[1])
-				coordenadasPercorridas[chave] = coordenadasPercorridas.get(chave, 0) + 1
-		else: #Diagonais
-			if not parte2:
+		if not parte2: # Ignora as linhas diagonais se não for a parte 2.
+			if origem[0] != destino[0] and origem[1] != destino[1]:
 				continue
-			coordenadaAtual = origem[:]
-			while tuple(coordenadaAtual) != tuple(destino):
-				chave = tuple(coordenadaAtual)
-				coordenadasPercorridas[chave] = coordenadasPercorridas.get(chave, 0) + 1
-				#incrementa um passo:
-				coordenadaAtual[0] += 1 if coordenadaAtual[0] < destino[0] else -1
-				coordenadaAtual[1] += 1 if coordenadaAtual[1] < destino[1] else -1
+		coordenadaAtual = origem[:]
+		chave = tuple(coordenadaAtual)
+		coordenadasPercorridas[chave] = coordenadasPercorridas.get(chave,0) + 1 # Como ele inclui os pontos iniciais e finais, preciso fazer aqui também.
+		while tuple(coordenadaAtual) != tuple(destino):
+			for dim in range (2): # Repete para o eixo X e Y.
+				if coordenadaAtual[dim] != destino[dim]: # Ainda não chegou nessa dimensão.
+					coordenadaAtual[dim] += 1 if coordenadaAtual[dim] < destino[dim] else -1 # Incrementa um passo nesse eixo.
 			chave = tuple(coordenadaAtual)
-			coordenadasPercorridas[chave] = coordenadasPercorridas.get(chave, 0) + 1
+			coordenadasPercorridas[chave] = coordenadasPercorridas.get(chave,0) + 1
 	coordenadasComSobreposicaoDeLinhas = [chave 
 						for chave,valor in coordenadasPercorridas.items() 
 						if valor > 1]
