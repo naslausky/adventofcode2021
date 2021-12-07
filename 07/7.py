@@ -7,24 +7,18 @@ with open('input.txt') as file:
 	numeros = numerosString.split(',')
 	numeros = list(map(int,numeros))
 
-gastoMinimoCombustivel = 10**20
+gastoMinimoCombustivel = gastoMinimoCombustivelParte2 = 10**20
 for posicao in range (min(numeros),max(numeros)):
-	combustivel = 0
-	for numero in numeros:
-		combustivel += abs(numero-posicao)
-	if combustivel < gastoMinimoCombustivel:
-		gastoMinimoCombustivel = combustivel
-print("O mínimo de combustível necessário para mover os caranguejos é:", gastoMinimoCombustivel)
-
-#Parte 2:
-gastoMinimoCombustivel = 10**20
-for posicao in range(min(numeros), max(numeros)):
-	custo = 0
-	for numero in numeros:
-		distanciaDaPosicao = abs(numero - posicao)
+	custo = custoParte2 = 0
+	for numero in numeros: # Calcula o custo dessa posição para as duas regras:
+		custo += abs(numero-posicao) # Parte 1
+		distanciaDaPosicao = abs(numero - posicao) # Parte 2
 		custoDessaPosicao = distanciaDaPosicao * (distanciaDaPosicao+1) / 2
-		custo += int(custoDessaPosicao)
+		custoParte2 += int(custoDessaPosicao)
+
 	if custo < gastoMinimoCombustivel:
 		gastoMinimoCombustivel = custo
-
-print("O mínimo de combustível necessário para mover os caranguejos da segunda forma é:", gastoMinimoCombustivel)
+	if custoParte2 < gastoMinimoCombustivelParte2:
+		gastoMinimoCombustivelParte2 = custoParte2
+print("O mínimo de combustível necessário para mover os caranguejos é:", gastoMinimoCombustivel)
+print("O mínimo de combustível necessário para mover os caranguejos da segunda forma é:", gastoMinimoCombustivelParte2)
