@@ -29,7 +29,7 @@ for linha in linhas:
 		elif len(conjunto) == 7:
 			gabarito[8] = conjunto # Só o digito 8 utiliza 7 segmentos.
 
-	for conjunto in listaDosConjuntos:# Descobre os que faltam. São os que possuem 5 e 6 segmentos acesos.
+	for conjunto in listaDosConjuntos: # Descobre os que faltam. São os que possuem 5 e 6 segmentos acesos.
 		if len(conjunto) == 5 : # Dos dígitos que tem 5 segmentos acesos (2,3,5):
 			if conjunto.issuperset(gabarito[7]): # O dígito 3 é o único que contém o dígito 7 todo:
 				gabarito[3] = conjunto
@@ -51,5 +51,5 @@ for linha in linhas:
 				gabaritoInverso[listaDosConjuntosSaida[2]] * (10**1) +
 				gabaritoInverso[listaDosConjuntosSaida[3]] * (10**0))
 	somaDosValoresDeTodosOsDisplays += valorDesteDisplay
-print('Quantidade de dígitos 1,4,7 e 8:', quantidadeDeDigitos1748)
+print('Quantidade de dígitos 1, 4, 7 e 8:', quantidadeDeDigitos1748)
 print('Soma dos valores de todos os displays:', somaDosValoresDeTodosOsDisplays)
