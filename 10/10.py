@@ -11,7 +11,6 @@ mapaPontuacaoCompletar = {'(':1, '[':2, '{':3, '<':4} # Dicionário com a pontua
 somaDosErros = 0 # Resposta da parte 1
 pontuacoesCaracteresFaltantes = [] # Resposta da parte 2
 for linha in linhas:
-	linhaCorrompida = False
 	listaCaracteres= []
 	for caracter in linha:
 		if caracter in '([{<':
@@ -19,8 +18,8 @@ for linha in linhas:
 		else:
 			if mapaFechamento[listaCaracteres.pop()] != caracter:
 				somaDosErros+=mapaPontuacao[caracter]
-				linhaCorrompida = True # O certo era parar de varrer a linha por aqui, mas pelo visto nesse input não precisa.
-	if not linhaCorrompida: # Parte 2: ignorar as linhas corrompidas.
+				break
+	else: # Parte 2: ignorar as linhas corrompidas.
 		pontuacaoCaracteresRestantes = 0 # Pontuação dessa linha.
 		for caracter in reversed(listaCaracteres):
 			pontuacaoCaracteresRestantes *= 5
