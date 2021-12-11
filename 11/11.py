@@ -10,9 +10,10 @@ with open('input.txt') as file:
 			coordenada = (indiceLinha, indiceCaracter)
 			grid[coordenada] = int(caracter)
 
-def verificarFlash(grid, coordenada):
+def incrementarCoordenada(grid, coordenada):
+	grid[coordenada] += 1
 	if coordenada in coordenadasComFlash:
-		return # Essa coordenada já teve flash esse turno.
+		return # Essa coordenada já piscou esse turno.
 	if grid[coordenada] >= 10:
 		coordenadasComFlash.add(coordenada)
 		for dx in range(-1,2):
@@ -20,8 +21,7 @@ def verificarFlash(grid, coordenada):
 				if dx != 0 or dy != 0:
 					coordenadaAdjacente = (coordenada[0]+dx, coordenada[1]+dy)
 					if coordenadaAdjacente in grid:
-						grid[coordenadaAdjacente] += 1		
-						verificarFlash(grid, coordenadaAdjacente)
+						incrementarCoordenada(grid, coordenadaAdjacente)
 def imprimirGrid(grid):
 	nLinhas = int(len(grid)**0.5)
 	for ix in range(nLinhas):
@@ -30,12 +30,10 @@ def imprimirGrid(grid):
 
 numeroDeFlashes = 0
 numeroDePassos = 0
-while sum([valor for valor in grid.values()]):
-	coordenadasComFlash = set()
+while sum([valor for valor in grid.values()]): #Quando a soma for 0, significa que os polvos piscaram juntos.
+	coordenadasComFlash = set() # Para cada coordenada piscar apenas uma vez por passo.
 	for coordenada in grid:
-		grid[coordenada] += 1
-	for coordenada in grid:
-		verificarFlash(grid, coordenada)
+		incrementarCoordenada(grid, coordenada)
 	for coordenada in grid:
 		if grid[coordenada] > 9:
 			numeroDeFlashes += 1
