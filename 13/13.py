@@ -44,5 +44,5 @@ for indiceLinha in range(maiorY+1):
 	pontosDestaLinha = [ponto for ponto,valor in folha.items() if ponto[1] == indiceLinha and valor]
 	linha = ''
 	for indiceColuna in range(maiorX+1):
-		linha += '#' if folha.get((indiceColuna,indiceLinha),False) else '.'
+		linha += '#' if folha.get((indiceColuna,indiceLinha),False) else ' '
 	print(linha)
