@@ -16,29 +16,32 @@ with open('input.txt') as file:
 		parDeCaracteres = caracter + template[indiceCaracter+1]
 		dicTemplate[parDeCaracteres] = dicTemplate.get(parDeCaracteres, 0) + 1
 
-def calcularQuantidadeDeCaracteres(dicTemplate): # Função que recebe o dicionário e contabiliza a resposta
-
-	pass
+def calcularQuantidadeDeCaracteres(dicTemplate): # Função que recebe o dicionário e contabiliza a resposta.
+	# Todos os caracteres foram contados duas vezes: "ABC" (O 'B' é contado no par 'AB' e no par 'BC')
+	# Exceto o primeiro e o último da string original. Então adiciono uma unidade de cada na contagem.
+	# Para no final dividir todos por dois.
+	contagemCaracteres = {template[0]:1, template[-1]:1}
+	for chave, valor in dicTemplate.items():
+		for indiceCaracter in range(2): # Para ambos os caracteres no par:
+			contagemCaracteres[chave[indiceCaracter]] = contagemCaracteres.get(chave[indiceCaracter], 0) + valor
+	for chave, valor in contagemCaracteres.items(): # Divide o valor de todos por dois:
+		contagemCaracteres[chave] = int(valor / 2)
+	quantidadeCaracterMaisComum = max(valor for valor in contagemCaracteres.values())
+	quantidadeCaracterMenosComum = min(valor for valor in contagemCaracteres.values())
+	return quantidadeCaracterMaisComum - quantidadeCaracterMenosComum
 
 for i in range(40): # Aplica 40 passos do processo.
-	novoTemplate = {}
+	if i==10: # Imprime a resposta da parte 1:
+		print('Diferença entre os caracteres após 10 passos:', calcularQuantidadeDeCaracteres(dicTemplate))
+	novoTemplate = {} # Cada par de caracteres gera dois novos pares após um passo.
 	for parDeCaracteres in dicTemplate:
 		if parDeCaracteres in dicRegras:
 			caracterCentral = dicRegras[parDeCaracteres]
 			parEsquerda = parDeCaracteres[0] + caracterCentral
 			parDireita = caracterCentral + parDeCaracteres[1]
-			novoTemplate[parEsquerda] = novoTemplate.get(parEsquerda, 0) + dicTemplate[parDeCaracteres]
-			novoTemplate[parDireita] = novoTemplate.get(parDireita, 0) +  dicTemplate[parDeCaracteres]
-		else: 
+			for chave in (parEsquerda, parDireita): # Incrementa a contagem dos dois novos pares de caracteres.
+				novoTemplate[chave] = novoTemplate.get(chave, 0) + dicTemplate[parDeCaracteres]
+		else: # Creio não precisar, mas poderia ocorrer de um par não ter uma regra de transformação.
 			novoTemplate[parDeCaracteres] = dicTemplate[parDeCaracteres]
 	dicTemplate = novoTemplate
-
-contagemCaracteres = {template[0]:1, template[-1]:1}
-for chave, valor in dicTemplate.items():
-	for indiceCaracter in range(2):
-		contagemCaracteres[chave[indiceCaracter]] = contagemCaracteres.get(chave[indiceCaracter], 0) + valor
-for chave, valor in contagemCaracteres.items():
-	contagemCaracteres[chave] = int(valor / 2)
-quantidadeCaracterMaisComum = max(valor for valor in contagemCaracteres.values())
-quantidadeCaracterMenosComum = min(valor for valor in contagemCaracteres.values())
-print(quantidadeCaracterMaisComum - quantidadeCaracterMenosComum)
+print('Diferença entre os caracteres após 40 passos:', calcularQuantidadeDeCaracteres(dicTemplate))
