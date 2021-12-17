@@ -8,6 +8,12 @@ with open('input.txt') as file:
 	numeroHexadecimal = int(linha,16)
 	stringEmBinario = bin(numeroHexadecimal)[3:] # Exclui o '0b' e o '1' inicial que eu coloquei acima.
 
+def extrairPrimeirosCaracteres(string, quantidade, decimal = False): # Função que extrai os primeiros N caracteres de uma string, retorna eles e o que sobrou dela.
+	valorExtraido = string[:quantidade]
+	if decimal:
+		valorExtraido = int(valorExtraido, 2)
+	return valorExtraido, string[quantidade:]	
+	
 def gerarPacoteBaseadoNosBits(stringBinaria): # Função recursiva que recebe uma string de bits e retorna:
 	# 1) Um dicionário representando o (primeiro) pacote formado por ela, incluindo os seus subPacotes.
 	# 2) O resto da string que não foi utilizado para gerar esse pacote.
@@ -31,24 +37,18 @@ def gerarPacoteBaseadoNosBits(stringBinaria): # Função recursiva que recebe um
 		dicPacote['valor'] = numeroLiteral
 		return dicPacote, restoDaString
 	else: # Representa um operador (e seus operandos): 
-		idTipoComprimento = restoDaString[0]  # Faço esse par de linhas muitas vezes, poderia ser movido para uma função.
-		restoDaString = restoDaString[1:]
+		idTipoComprimento, restoDaString = extrairPrimeirosCaracteres(restoDaString, 1)
 		dicPacote['idTipoComprimento'] =  int(idTipoComprimento) # Não precisa para resposta final.
 		if idTipoComprimento == '0': # Significa que os próximos 15 bits representam o número de bits de sub-pacotes.
-			comprimentoSubPacotes = restoDaString[:15]
-			restoDaString = restoDaString[15:]
-			comprimentoSubPacotes = int(comprimentoSubPacotes, 2)
-			bitsSubPacotes = restoDaString[:comprimentoSubPacotes]
-			restoDaString = restoDaString[comprimentoSubPacotes:]
+			comprimentoSubPacotes, restoDaString = extrairPrimeirosCaracteres(restoDaString, 15, True)
+			bitsSubPacotes, restoDaString = extrairPrimeirosCaracteres(restoDaString, comprimentoSubPacotes)
 			primeiroPacote, bitsSubPacotes = gerarPacoteBaseadoNosBits(bitsSubPacotes)
 			subPacotes = [primeiroPacote]
 			while bitsSubPacotes: # Monta próximos pacotes enquanto não foram utilizados todos os bits reservados.
 				proximoPacote, bitsSubPacotes = gerarPacoteBaseadoNosBits(bitsSubPacotes)
 				subPacotes.append(proximoPacote)
 		else: # Significa que os próximos 11 bits representam quantos sub-pacotes tem.
-			numeroSubPacotes = restoDaString[:11]
-			restoDaString = restoDaString[11:]
-			numeroSubPacotes = int(numeroSubPacotes, 2)
+			numeroSubPacotes, restoDaString = extrairPrimeirosCaracteres(restoDaString, 11, True)
 			subPacotes = []
 			for _ in range(numeroSubPacotes): # Monta pacotes pelo número de vezes informado.
 				subPacote, restoDaString = gerarPacoteBaseadoNosBits(restoDaString)
