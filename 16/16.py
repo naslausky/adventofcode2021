@@ -8,7 +8,7 @@ with open('input.txt') as file:
 	numeroHexadecimal = int(linha,16)
 	stringEmBinario = bin(numeroHexadecimal)[3:] # Exclui o '0b' e o '1' inicial que eu coloquei acima.
 
-def gerarPacoteBaseadoNosBits(stringBinaria): #Função recursiva que recebe uma string de bits e retorna:
+def gerarPacoteBaseadoNosBits(stringBinaria): # Função recursiva que recebe uma string de bits e retorna:
 	# 1) Um dicionário representando o (primeiro) pacote formado por ela, incluindo os seus subPacotes.
 	# 2) O resto da string que não foi utilizado para gerar esse pacote.
 	bitsVersao = stringBinaria[:3] # Os três primeiros bits são o número da versão.
@@ -31,7 +31,7 @@ def gerarPacoteBaseadoNosBits(stringBinaria): #Função recursiva que recebe uma
 		dicPacote['valor'] = numeroLiteral
 		return dicPacote, restoDaString
 	else: # Representa um operador (e seus operandos): 
-		idTipoComprimento = restoDaString[0]  #Faço esse par de linhas muitas vezes, poderia ser movido para uma função.
+		idTipoComprimento = restoDaString[0]  # Faço esse par de linhas muitas vezes, poderia ser movido para uma função.
 		restoDaString = restoDaString[1:]
 		dicPacote['idTipoComprimento'] =  int(idTipoComprimento) # Não precisa para resposta final.
 		if idTipoComprimento == '0': # Significa que os próximos 15 bits representam o número de bits de sub-pacotes.
