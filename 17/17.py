@@ -1,7 +1,7 @@
 #Desafio do dia 17/12/2021:
 #a) Receber uma área destino e calcular a maior altura que um torpedo pode alcançar e ainda passar por ela.
 #b) Calcular quantas velocidades iniciais distintas passam pela área destino.
-
+# Esta resolução supõe que a área destino fica a direita e abaixo da posição inicial.
 with open('input.txt') as file:
 	linha = file.read().splitlines()[0]
 	linha = linha.replace('target area: ', '')
@@ -12,8 +12,9 @@ with open('input.txt') as file:
 		areaDestino.append(intervalo)
 velocidadesIniciais = {} # Dicionário que relaciona as velocidades iniciais que alcançam o destino com sua maior altura alcançada.
 for x0 in range(1,areaDestino[0][1]+1):
-	y0=areaDestino[1][0] 
-	while True: # Laco que incrementa a velocidade vertical inicial.
+	limiteInferior = areaDestino[1][0] 
+	limiteSuperior = 1 - areaDestino[1][0] 
+	for y0 in range(limiteInferior, limiteSuperior+1):
 		posicaoAtual = [0,0]
 		velocidade = [x0,y0]
 		maiorAltura = 0
@@ -36,10 +37,5 @@ for x0 in range(1,areaDestino[0][1]+1):
 
 		if estaNaAreaDestino:
 			velocidadesIniciais[(x0,y0)] = maiorAltura
-
-		if y0 > 200: # Melhorar limite superior baseado no X0. No momento esse valor foi arbitrado.
-			break
-		y0+=1
-
 print('Maior altura possível de alcançar:', max(valor for valor in velocidadesIniciais.values()))
 print('Número de velocidades iniciais que acertam o alvo:', len(velocidadesIniciais))
