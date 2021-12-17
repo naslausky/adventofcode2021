@@ -37,9 +37,9 @@ for x0 in range(1,areaDestino[0][1]+1):
 		if estaNaAreaDestino:
 			velocidadesIniciais[(x0,y0)] = maiorAltura
 
-		if y0 > 200: # Melhorar limite superior
+		if y0 > 200: # Melhorar limite superior baseado no X0. No momento esse valor foi arbitrado.
 			break
 		y0+=1
 
-print(max(valor for valor in velocidadesIniciais.values()))
-print(len(velocidadesIniciais))
+print('Maior altura possível de alcançar:', max(valor for valor in velocidadesIniciais.values()))
+print('Número de velocidades iniciais que acertam o alvo:', len(velocidadesIniciais))
