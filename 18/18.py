@@ -7,7 +7,6 @@ import copy
 with open('input.txt') as file:
 	linhasString = file.read().splitlines()
 	linhas = list(map(eval,linhasString))
-	linhasOriginais = copy.deepcopy(linhas) # Para a parte 2.
 
 def explodirSeNecessario(parOriginal, profundidade): 
 	# Função recursiva, que recebe um par e explode uma vez apenas, se válido.
@@ -66,7 +65,8 @@ def somar(atual, proximaLinha): #Função que junta dois pares em um novo par.
 	if not atual: #Só para o primeiro caso, quando o par anterior é vazio.
 		return proximaLinha
 	return [atual, proximaLinha]
-def reduzir(linhaAtual): # Função que reduz um par. Aplica explosões e divisões até não poder mais.
+def reduzir(linha): # Função que reduz um par. Aplica explosões e divisões até não poder mais e retorna o resultado.
+	linhaAtual = copy.deepcopy(linha)
 	mudouAlgo = True
 	while mudouAlgo:
 		mudouAlgo = False
@@ -78,6 +78,7 @@ def reduzir(linhaAtual): # Função que reduz um par. Aplica explosões e divis�
 		if dividiu:
 			mudouAlgo = True
 			continue
+	return linhaAtual
 def calcularMagnitude(par): # Função que recebe um par e calcula sua pontuação.
 	magnitude = 0
 	coordenadasValores = ((0,3),(1,2)) # Atribui um valor para cada coordenada.
@@ -92,18 +93,15 @@ def calcularMagnitude(par): # Função que recebe um par e calcula sua pontuaç�
 somaAteAgora = []
 for linha in linhas:
 	somaAteAgora = somar(somaAteAgora, linha)
-	reduzir(somaAteAgora)
+	somaAteAgora = reduzir(somaAteAgora)
 print('A magnitude da soma final é:', calcularMagnitude(somaAteAgora))
 # Parte 2:
-linhas = linhasOriginais
 magnitudeMaxima = 0 
-for linha1Original in linhas:
-	for linha2Original in linhas:
-		linha1 = copy.deepcopy(linha1Original)
-		linha2 = copy.deepcopy(linha2Original)
+for linha1 in linhas:
+	for linha2 in linhas:
 		if linha1 == linha2:
 			continue
 		soma = somar(linha1,linha2)
-		reduzir(soma)
+		soma = reduzir(soma)
 		magnitudeMaxima = max(magnitudeMaxima, calcularMagnitude(soma))
 print('A maior magnitude obtida com a soma de dois elementos é:', magnitudeMaxima)
