@@ -1,7 +1,6 @@
 #Desafio do dia 18/12/2021:
 #a) Receber uma lista de listas aninhadas e um conjunto de regras de redução. Calcular a soma de todas as listas, onde a cada soma é necessário reduzir o resultado.
 #b) Calcular o par de linhas que produz o maior resultado.
-
 import math
 import copy
 with open('input.txt') as file:
@@ -14,7 +13,6 @@ def explodirSeNecessario(parOriginal, profundidade):
 	# Caso o número já tenha sido somado, seu valor é None.
 	direita = esquerda = None
 	explodiu = False
-	substituirAgoraPor0 = False
 	for indice, elemento in enumerate(parOriginal):
 		if type(elemento) is list:
 			# O elemento anterior pode ter explodido.
@@ -22,7 +20,6 @@ def explodirSeNecessario(parOriginal, profundidade):
 				if profundidade >= 3 : # Explodir este elemento.
 					esquerda = elemento[0]
 					direita = elemento[1]
-					substituirAgoraPor0 = True
 					parOriginal[indice] = 0
 					explodiu = True
 			elif not explodiu: # Algum dos netos é lista. Chamar a função novamente:
@@ -44,7 +41,7 @@ def explodirSeNecessario(parOriginal, profundidade):
 						direita = None
 				return esquerda, explodiu, direita
 	return None, False, None # Não explodiu nem há nada para somar.
-def incrementarIndice (par, numero, indice): #Função que adiciona um número ao número mais a direita/esquerda..
+def incrementarIndice (par, numero, indice): # Função que adiciona um número ao número mais a direita/esquerda.
 	parAtual = par
 	while type(parAtual[indice]) is list:
 		parAtual = parAtual[indice]
@@ -59,10 +56,10 @@ def dividirSeNecessario(parOriginal):
 				return True
 		else:
 			dividiu = dividirSeNecessario(elemento)
-		if dividiu: #Pra não tentar o proximo elemento se for o caso.
+		if dividiu: # Pra não tentar o proximo elemento se for o caso.
 			return True
-def somar(atual, proximaLinha): #Função que junta dois pares em um novo par.
-	if not atual: #Só para o primeiro caso, quando o par anterior é vazio.
+def somar(atual, proximaLinha): # Função que junta dois pares em um novo par.
+	if not atual: # Só para o primeiro caso, quando o par anterior é vazio.
 		return proximaLinha
 	return [atual, proximaLinha]
 def reduzir(linha): # Função que reduz um par. Aplica explosões e divisões até não poder mais e retorna o resultado.
