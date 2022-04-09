@@ -113,44 +113,10 @@ with open('input.txt') as file:
 	for i in range(3,10,2):
 		salas.append([linhas[2][i],linhas[3][i]])
 	estadoInicial = Estado({},salas, 0)
-#print(estadoInicial)
-#print('______________________')
-#a = estadoInicial.proximosEstadosPossiveis()[16].proximosEstadosPossiveis()[2].proximosEstadosPossiveis()[0].proximosEstadosPossiveis()[2].proximosEstadosPossiveis()[0].proximosEstadosPossiveis()[2].proximosEstadosPossiveis()[0].proximosEstadosPossiveis()[0].proximosEstadosPossiveis()[0].proximosEstadosPossiveis()[0].proximosEstadosPossiveis()[0].proximosEstadosPossiveis()[0]
-#print(a.taEngarrafadoNoCorredor())
-#print(a,a.custoAteAgora)
-#[print(x, x.custoAteAgora) for x in a]
-#print('______________________')
-#b = estadoInicial.proximosEstadosPossiveis()[14].proximosEstadosPossiveis()[5]
-#print(b)
-#print('______________________')
-#conjunto = set()
-#print('hashes:')
-#print(a.__hash__())
-#print(b.__hash__())
-#conjunto.add(a)
-#conjunto.add(b)
-#dicionario = {}
-#dicionario[a]=0
-#dicionario[b]=0
-#print(dicionario)
-#print(conjunto)
-#estadoTeste = Estado({5:'A'}, [           ['.','.'],              ['.','.'],           ['.','.'],           ['.','.']         ], 0)
-#estadoTeste = Estado({}, [           ['A','A'],              ['B','B'],           ['C','C'],           ['D','D']         ], 0)
-#print(estadoTeste)
-#print(estadoTeste.taEngarrafadoNoCorredor(5,2))
-#teste = estadoInicial.proximosEstadosPossiveis()[3]
-#teste = teste.proximosEstadosPossiveis()[0]
-#print(teste)
-#print('______________________')
-#[print(sala) for sala in estadoTeste.proximosEstadosPossiveis()]
-#print('______________________')
-#minimo = 14000
-#input()
-minimo = 20000
+
 estadosASeremTestados = [estadoInicial]
 minimoDeCadaEstado = {estadoInicial : 0} #Dicionário que relaciona cada estado ao minimo que é possível chegar nele visto até agora.
 while estadosASeremTestados:
-#	print(len(estadosASeremTestados))
 	proximosEstados = []
 	for estado in estadosASeremTestados:
 		proximosCandidatosAEstados = estado.proximosEstadosPossiveis()
@@ -159,9 +125,5 @@ while estadosASeremTestados:
 				continue #Já cheguei nesse estado com igual ou menor custo.
 			minimoDeCadaEstado[proximo] = proximo.custoAteAgora
 			proximosEstados.append(proximo)
-			if proximo.estadoFinal():
-				minimo = min(minimo, proximo.custoAteAgora)#Descobrir porque que não tá funcionando olhar no dicionário
 	estadosASeremTestados = proximosEstados
-#	print('Resposta:', [x.custoAteAgora for x in minimoDeCadaEstado if x.estadoFinal()])
-
-print(minimo)
+print('Mínimo de energia necessária para chegar ao estado final:', [minimo for estado, minimo  in minimoDeCadaEstado.items() if estado.estadoFinal()][0])
