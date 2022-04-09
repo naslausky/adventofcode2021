@@ -1,8 +1,12 @@
 class Estado:
-	def __init__(self, corredor, salas, custoAteAgora):
+	def __init__(self, corredor, salas, custoAteAgora, parte2 = False):
 		self.corredor = corredor #Um dicionário que relaciona o índice no corredor ao peixe que tá nessa posição no corredor (apenas ocupadas). # {0 : 'A', 3:'B'}
 		self.salas = salas  #Uma lista em que cada elemento é uma outra lista referente a uma sala. # [[A,B], [C,D],[B,A],[D,C]]
 		self.custoAteAgora = custoAteAgora #Quanto é o custo para chegar nesse estado.
+		self.parte2 = parte2
+
+	def quantidadeDeLinhas(self,):
+		return 4 if self.parte2 else 2
 
 	def __eq__(self,other ): #Para poder ser incluído e comparável no dicionário.
 		if self.corredor != other.corredor:
@@ -23,12 +27,13 @@ class Estado:
 			corredor[chave] = valor
 		retorno = ''.join(corredor)
 		retorno += '\n'
-		primeiraLinha = '  '
-		segundaLinha = '  '
+		linhas = ['  '] * self.quantidadeDeLinhas()
 		for sala in self.salas:
-			primeiraLinha += sala[0] + ' '
-			segundaLinha += sala[1] + ' '
-		return retorno + primeiraLinha + '\n' + segundaLinha + '\n'
+			for indiceLinha in range(self.quantidadeDeLinhas()):
+				linhas[indiceLinha] += sala[indiceLinha] + ' '
+		for linha in linhas:
+			retorno += linha + '\n'
+		return retorno
 
 	def taEngarrafadoNoCorredor(self, indiceOrigem, indiceDestino): #Função que retorna verdadeiro se tem algum peixe no caminho das coordenadas, falso caso contrário:
 		taEngarrafado = False 
@@ -43,7 +48,7 @@ class Estado:
 	def estadoFinal(self,): #Retorna verdadeiro se chegou na organização desejada.
 		for indiceSala in range(4):
 			letraDaVez = chr(65+indiceSala)
-			if self.salas[indiceSala] != [letraDaVez, letraDaVez]:
+			if self.salas[indiceSala] != [letraDaVez] * self.quantidadeDeLinhas():
 				return False
 		return True
 
@@ -56,6 +61,7 @@ class Estado:
 		for posicao, peixe in self.corredor.items(): #Verifica os do corredor:
 			indiceSalaDestino = ord(peixe) - 65
 			indiceDaSalaDestinoNoCorredor = indiceSalaDestino * 2 + 2 #No corredor, a sala 0 está na posição 2.
+#MUDAR AQUI
 			if (self.salas[indiceSalaDestino][1]=='.' or  #Para a sala estar disponível como destino, a posição de baixo precisa estar vazia (e consequentemente a de cima), ou
 				(self.salas[indiceSalaDestino][0]=='.' and  #A de cima precisa estar vazia, e a de baixo precisa já ter o peixe correto.
 				self.salas[indiceSalaDestino][1]==peixe)) : #Se a sala tiver disponível, vê se o caminho pelo corredor tá vazio:
@@ -106,14 +112,20 @@ class Estado:
 		return proximosEstados
 					
 
-with open('input.txt') as file:
+with open('input2.txt') as file:
 	linhas = file.read().splitlines()
-	
+	linhas.append('  #D#C#B#A#') #Linhas extras para a parte 2.
+	linhas.append('  #D#B#A#C#')	
 	salas = []
+	salasParte2 = []
 	for i in range(3,10,2):
 		salas.append([linhas[2][i],linhas[3][i]])
+		salasParte2.append([linhas[2][i], linhas[5][i], linhas[6][i], linhas[3][i]])
 	estadoInicial = Estado({},salas, 0)
-
+	estadoInicialParte2 = Estado({},salasParte2, 0, True)
+print(estadoInicial)
+print(estadoInicialParte2)
+input()
 estadosASeremTestados = [estadoInicial]
 minimoDeCadaEstado = {estadoInicial : 0} #Dicionário que relaciona cada estado ao minimo que é possível chegar nele visto até agora.
 while estadosASeremTestados:
@@ -127,3 +139,6 @@ while estadosASeremTestados:
 			proximosEstados.append(proximo)
 	estadosASeremTestados = proximosEstados
 print('Mínimo de energia necessária para chegar ao estado final:', [minimo for estado, minimo  in minimoDeCadaEstado.items() if estado.estadoFinal()][0])
+#Parte 2:
+
+
