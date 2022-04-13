@@ -20,86 +20,54 @@ def pretty(d, indent=0):
 			pretty(value, indent+1)
 		else:
 			print('\t' * (indent+1) + str(value))
-
-def inserirInstrucao(intervalos, aceso, dicDestino):
-	ultimoNivel = len(intervalos) == 1
-	intervaloDaVez = intervalos[0]
-	indiceInferior, indiceSuperior = intervaloDaVez
-	# Indice inferior:
-	contemEsseIndice = [intervalo for intervalo in dicDestino if indiceInferior in range(*intervalo)]
-	if contemEsseIndice: #Algum intervalo no dicionário já contem esse índice inferior. Quebrar.
-		intervaloAQuebrar = contemEsseIndice[0]
-		valor = dicDestino[intervaloAQuebrar]
-		if indiceInferior != intervaloAQuebrar[0]:
-			novoIntervalo1 = (intervaloAQuebrar[0], indiceInferior)
-			novoIntervalo2 = (indiceInferior, intervaloAQuebrar[1])
-			dicDestino.pop(intervaloAQuebrar, 0) #Ou del
-			dicDestino[novoIntervalo1] = valor
-			dicDestino[novoIntervalo2] = valor
-	else: # Nenhum intervalo no dicionário contém esse índice inferior. Adicionar
-		intervalosPresentesMaiores = [x[0] for x in dicDestino if x[0] > indiceInferior]
-		novoSuperior = indiceSuperior + 1
-		if intervalosPresentesMaiores:
-			minimoParcial = min(intervalosPresentesMaiores)
-			novoSuperior = min(minimoParcial, indiceSuperior+1)
-		novoIntervaloACriar = (indiceInferior, novoSuperior)
-		valor = False if ultimoNivel else {}
-		dicDestino[novoIntervaloACriar] = valor
-	#Índice Superior:
-	contemEsseIndice = [intervalo for intervalo in dicDestino if indiceSuperior in range(*intervalo)]
-	if contemEsseIndice:
-		intervaloAQuebrar = contemEsseIndice[0]
-		try:
-			valor = dicDestino[intervaloAQuebrar]
-		except:
-			print(contemEsseIndice)
-			exit()
-		if indiceSuperior != (intervaloAQuebrar[1] - 1): 
-
-			novoIntervalo1 = (intervaloAQuebrar[0], indiceSuperior + 1)
-			novoIntervalo2 = (indiceSuperior + 1, intervaloAQuebrar[1])
-			dicDestino.pop(intervaloAQuebrar, 0)
-			dicDestino[novoIntervalo1] = valor
-			dicDestino[novoIntervalo2] = valor
-	else:
-		intervalosPresentesMenores = [x[1] for x in dicDestino if x[1] <= indiceSuperior]
-		novoInferior = indiceInferior
-		if intervalosPresentesMenores:
-			maximoParcial = max(intervalosPresentesMenores)
-			novoInferior = max(maximoParcial, indiceInferior)
-		novoIntervaloACriar = (novoInferior, indiceSuperior+1)
-		valor = False if ultimoNivel else {}
-		dicDestino[novoIntervaloACriar] = valor
-
-	comeco = intervaloDaVez[0] 
-	while comeco < intervaloDaVez[1]:
-		intervalo = [x for x in dicDestino if x[0] == comeco]
-		if not intervalo:
-			#precisa inserir um novo intervalo entre 2 intervalos quebrados:
-			inferior = comeco
-			superior = min([x[0] for x in dicDestino if x[0] > inferior])
-			intervalo = (inferior,superior)
-			valor = False if ultimoNivel else {}
-			dicDestino[intervalo] = valor
-		else:
-			intervalo = intervalo[0]
-		if ultimoNivel:
-			dicDestino[intervalo] = aceso
-		else:
-			inserirInstrucao(intervalos[1:], aceso, dicDestino[intervalo])
-		comeco = intervalo[1]
-
-dicionarioCubos = {}
-for intervalo, ligado in instrucoes:
-	inserirInstrucao(intervalo, ligado, dicionarioCubos)
-#Contabilizando:
-pretty(dicionarioCubos)
-valorTotal = 0
-for rangeX, dicionarioFilho1 in dicionarioCubos.items():
-	for rangeY, dicionarioFilho2 in dicionarioFilho1.items():
-		for rangeZ, booleano in dicionarioFilho2.items():
-			if booleano:
-				valorTotal += ((rangeZ[1] - rangeZ[0])*
+#Faz 3 listas com cada range possível
+rangesOrdenados = [[],[],[]]
+for intervalos, _ in instrucoes:
+	for i, intervalo in enumerate(intervalos):
+		intervaloNormalizado = (intervalo[0],intervalo[1]+1)
+		rangesOrdenados[i].extend(intervaloNormalizado)
+rangesOrdenados = [list(set(r))for r in rangesOrdenados]
+[r.sort() for r in rangesOrdenados]
+def intervaloEstaContidoNaInstrucao(intervalos, instrucao):
+	for dimensao in range(len(intervalos)): 
+		if not 	intervaloEstaContidoEmOutro(intervalos[dimensao], instrucao[dimensao]):
+			return False
+	return True
+	
+def intervaloEstaContidoEmOutro(menor, maior):
+	if menor[0]>= maior[0] and menor[1] <= maior[1]+1:
+		return True
+	return False
+respostaFinal = 0
+print('Objetivo:',len(rangesOrdenados[0]))
+#print(len(rangesOrdenados[1]))
+#print(len(rangesOrdenados[2]))
+for indiceX in range(len(rangesOrdenados[0])-1):
+	if not indiceX % 100:
+		print('Alcançado', indiceX)
+	rangeX = (rangesOrdenados[0][indiceX],rangesOrdenados[0][indiceX+1])
+	iX = [(i,l) for i, l in instrucoes if intervaloEstaContidoEmOutro(rangeX,i[0])]
+	if not iX:
+		continue
+	for indiceY in range(len(rangesOrdenados[1])-1):
+		rangeY = (rangesOrdenados[1][indiceY],rangesOrdenados[1][indiceY+1])
+		iY = [(i,l) for i,l in iX if intervaloEstaContidoEmOutro(rangeY, i[1])]
+		if not iY:
+			continue
+		for indiceZ in range(len(rangesOrdenados[2])-1):
+			rangeZ = (rangesOrdenados[2][indiceZ],rangesOrdenados[2][indiceZ+1])
+			iZ = [(i,l) for i,l in iY if intervaloEstaContidoEmOutro(rangeZ,i[2])]
+			if not iZ:
+				continue
+			intervaloAVerificar = (rangeX,rangeY,rangeZ) #Acho que nem precisa
+			intervaloAceso = False
+			#for intervalos, ligado in iZ: #Posso limitar aqui tb
+			#	#Ve se esse range é afetado por essa instrucao:
+			#	if intervaloEstaContidoNaInstrucao(intervaloAVerificar ,intervalos):
+			intervaloAceso = iZ[-1][1]
+			if intervaloAceso:
+				respostaFinal +=((rangeZ[1] - rangeZ[0])*
 						(rangeY[1] - rangeY[0])*
 						(rangeX[1] - rangeX[0]))
-print(valorTotal)
+
+print(respostaFinal)
