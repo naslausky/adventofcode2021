@@ -1,4 +1,13 @@
 # Desafio do dia 19/12/2021
+def somaTuplas(x,y):
+	x1,x2,x3 = x
+	y1,y2,y3 = y
+	return (x1+y1, x2+y2, x3+y3)
+
+def diminuiTuplas(x,y):
+	x1,x2,x3 = x
+	y1,y2,y3 = y
+	return (x1-y1, x2-y2, x3-y3)
 
 def permutacoesDeUmaTupla(tupla): #Retorna todas as 24 permutações dos eixos da coordenada tupla.
 	x, y, z = tupla
@@ -78,8 +87,10 @@ with open('smallinput.txt') as file:
 							for linha in linhasDesteBeacon]
 		listaScanners.append(linhasDesteBeacon)	
 resposta = sum([len(x) for x in listaScanners])
+#print(resposta)
 paresEncontrados = set()
 posicoesRelativas = {}
+permutacoes = {}
 pontosFinais = set()
 for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar outro: 
 	for indiceScanner2 in range(indiceScanner+1, len(listaScanners)):
@@ -119,18 +130,22 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 					#	input()
 					elementosEmComum = [x for x in l1Relativo if x in l2Relativo]
 					if len(elementosEmComum)>=12:
-						print('Achada Interseção!: Scanners: ', parScanner,'Elementos em comum: ',
-							 len(elementosEmComum),'Permutação: ', indicePermutacao)
-						segundoPontoPermutado = (px2,py2,pz2)
-						segundoPontoOriginal = permutacoesInversasDeUmaTupla(segundoPontoPermutado)[indicePermutacao]
-						px2o, py2o, pz2o = segundoPontoOriginal
-						print('É igual?', segundoPontoOriginal, l2[indicePivot2])
+#						print('Achada Interseção!: Scanners: ', parScanner,'Elementos em comum: ',
+#							 len(elementosEmComum),'Permutação: ', indicePermutacao)
+#						segundoPontoPermutado = (px2,py2,pz2)
+#						segundoPontoOriginal = permutacoesInversasDeUmaTupla(segundoPontoPermutado)[indicePermutacao]
+#						px2o, py2o, pz2o = segundoPontoOriginal
+						#print('É igual?', segundoPontoOriginal, l2[indicePivot2])
 						posicaoRelativa = (px-px2, py-py2, pz-pz2)
-						if (parScanner==(1,4)):
+						if (False):
+						#if (parScanner==(1,4)):
+						#if (parScanner==(0,1)):
+							print('_________________')
 							print(posicaoRelativa)
 							print(px,py,pz)
 							print(px2,py2,pz2)
-							print('_________________')
+						#	[print(somaTuplas(x,(pz,py,pz))) for x in elementosEmComum]
+							print('_________________')							
 #						
 #						if (parScanner==(0,1)):
 #							print(posicaoRelativa)
@@ -140,32 +155,37 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 						#print('Posicao Relativa:', posicaoRelativa)
 						#[print(l1Relativo[x], l2Relativo[x]) for x in range(25)]
 						posicoesRelativas[parScanner] = posicaoRelativa
+						permutacoes[parScanner] = indicePermutacao
 						resposta-=len(elementosEmComum)
 						paresEncontrados.add(parScanner)
 
-print(resposta)
-def somaTuplas(x,y):
-	x1,x2,x3 = x
-	y1,y2,y3 = y
-	return (x1+y1, x2+y2, x3+y3)
+#print(resposta)
 
-def diminuiTuplas(x,y):
-	x1,x2,x3 = x
-	y1,y2,y3 = y
-	return (x1-y1, x2-y2, x3-y3)
+#[print(x,y) for x,y in posicoesRelativas.items()]
+#print('_________')
+#[print(x,y) for x,y in permutacoes.items()]
+# Preciso preencher o permutações completamente antes de usar abaixo:
 
-[print(x,y) for x,y in posicoesRelativas.items()]
-print('_________')
+
+#
+#
+#input()
 qtdScanners = len(listaScanners) 
 while (len([x for x,y in posicoesRelativas.items() if x[0]==0]) < qtdScanners):
 	caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
 	#print('camin_ate_0:',caminhosDescobertosAteOZero)
 	for rota, distancia in caminhosDescobertosAteOZero.items():
 		destino = rota[1]
-		novosCaminhos = {(0,x[1]):somaTuplas(distancia,y) 
+		novosCaminhos = {(0,x[1]):
+						
+						somaTuplas(
+							distancia,
+							permutacoesInversasDeUmaTupla(y)[permutacoes[(0,x[0])]]
+						)
 						for x,y in posicoesRelativas.items() if x[0] == destino # }
 															and (0, x[1]) not in posicoesRelativas}
 		#print(novosCaminhos)
+		#input()
 		posicoesRelativas.update(novosCaminhos)
 #		[print(x,y) for x,y in posicoesRelativas.items()]
 #		input()
@@ -173,7 +193,12 @@ while (len([x for x,y in posicoesRelativas.items() if x[0]==0]) < qtdScanners):
 	caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
 	for rota, distancia in caminhosDescobertosAteOZero.items():
 		destino = rota[1]
-		novosCaminhos = {(0,x[0]):diminuiTuplas(y,distancia) 
+		novosCaminhos = {(0,x[0]):
+						
+						diminuiTuplas(
+							permutacoesInversasDeUmaTupla(y)[permutacoes[(0,x[1])]],
+							distancia
+						) 
 						for x,y in posicoesRelativas.items() if x[1] == destino # }
 															and (0, x[0]) not in posicoesRelativas}
 		#print('novosembaixo', novosCaminhos)
@@ -186,7 +211,7 @@ while (len([x for x,y in posicoesRelativas.items() if x[0]==0]) < qtdScanners):
 #	input()
 
 caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
-[print(x,y) for x,y in caminhosDescobertosAteOZero.items()]
+#[print(x,y) for x,y in caminhosDescobertosAteOZero.items()]
 #(0, 1) (68, -1246, -43)
 #(1, 3) (160, -1134, -23)
 #(2, 4) (1125, -168, 72)
