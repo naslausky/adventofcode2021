@@ -113,8 +113,8 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 					#	input()
 					elementosEmComum = [x for x in l1Relativo if x in l2Relativo]
 					if len(elementosEmComum)>=12:
-						print('Achada Interseção!: Scanners: ', parScanner,'Elementos em comum: ',
-							 len(elementosEmComum),'Permutação: ', indicePermutacao)
+						#print('Achada Interseção!: Scanners: ', parScanner,'Elementos em comum: ',
+						#	 len(elementosEmComum),'Permutação: ', indicePermutacao)
 #						segundoPontoPermutado = (px2,py2,pz2)
 #						segundoPontoOriginal = permutacoesInversasDeUmaTupla(segundoPontoPermutado)[indicePermutacao]
 #						px2o, py2o, pz2o = segundoPontoOriginal
@@ -135,14 +135,14 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 
 
 
-[print(x,y) for x,y in posicoesRelativas.items()]
+#[print(x,y) for x,y in posicoesRelativas.items()]
 #[print(x,y) for x,y in permutacoes.items()]
 #print('_________')
 #[print(x,y) for x,y in permutacoes.items()]
 # Preciso preencher o permutações completamente antes de usar abaixo:
 
 #
-permutacoes[(0,4)] = permutacoesInversasDeUmaTupla(4)
+#permutacoes[(0,4)] = permutacoesInversasDeUmaTupla(4)
 #
 #input()
 #beaconsFinais = set()
@@ -160,10 +160,39 @@ while ( len([x for x,y in posicoesRelativas.items() if x[0]==0] ) < qtdScanners)
 												distancia,
 												permutacoes[(0,par[0])](*delta)
 											)
+											
+				f1 = permutacoes[(0, par[0])]
+				f2 = permutacoes[par]
+				funcaoComposta = lambda x, y, z: f2(*f1 (x,y,z))
+				novasPermutacoes[par[1],0] = funcaoComposta #Como eu salvei ao contrario preciso salvar o contrario do contrario
+				
+				f1 = permutacoes[(par[0], 0)]
+				f2 = permutacoes[par[1],par[0]]
+				funcaoComposta = lambda x, y, z: f1 (*f2 (x,y,z))
+				novasPermutacoes[novoPar] = funcaoComposta
+				
 		posicoesRelativas.update(novosCaminhos)
+		permutacoes.update(novasPermutacoes)
 		#print('atualizado:')
 		#[print(x,y) for x,y in posicoesRelativas.items()]
 		#print('___________')
+#[print(x,y) for x,y in posicoesRelativas.items()]
+[print(x,y) for x,y in posicoesRelativas.items() if x[0] == 0]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		#print(novosCaminhos)
 		#input()
@@ -171,7 +200,7 @@ while ( len([x for x,y in posicoesRelativas.items() if x[0]==0] ) < qtdScanners)
 #		[print(x,y) for x,y in posicoesRelativas.items()]
 #		input()
 	
-#	caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
+	#caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
 #	for rota, distancia in caminhosDescobertosAteOZero.items():
 #		destino = rota[1]
 #		novosCaminhos = {(0,x[0]):
