@@ -178,8 +178,13 @@ while ( len([x for x,y in posicoesRelativas.items() if x[0]==0] ) < qtdScanners)
 		#print('___________')
 #[print(x,y) for x,y in posicoesRelativas.items()]
 [print(x,y) for x,y in posicoesRelativas.items() if x[0] == 0]
-
-
+print('___')
+[print(x) for x in permutacoes]
+beaconsTotaisReferentesAoZero = set()
+for indice, lista in enumerate(listaScanners):
+	funcaoParaEsseScanner = permutacoes[(0, indice)]
+	print(lista)
+	input()
 
 
 
