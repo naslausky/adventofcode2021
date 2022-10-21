@@ -121,12 +121,13 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 						#print('É igual?', segundoPontoOriginal, l2[indicePivot2])
 						posicaoRelativa = (px-px2, py-py2, pz-pz2) #Substituir pelo diminui tuplas
 						posicoesRelativas[parScanner] = posicaoRelativa
-						permutacoes[parScanner] = indicePermutacao
+						permutacoes[parScanner] = permutacoesInversasDeUmaTupla(indicePermutacao)
 						
 						
 						#Fazer de novo mudando o referencial para o outro scanner:  Serve só pra facilitar a segunda parte.
 						#Para isso, primeiramente a distancia é invertida (a-b vira b-a), e em seguida transformamos usando a inversa
 						parScannerInverso = (indiceScanner2, indiceScanner) # Talvez usar o tuple(reversed())
+						permutacoes[parScannerInverso] = permutacoesDeUmaTupla(indicePermutacao)
 						posicaoRelativaInversa = (px2-px, py2-py, pz2-pz)
 						posicaoRelativaInversa = permutacoesInversasDeUmaTupla(indicePermutacao)(*posicaoRelativaInversa)
 						posicoesRelativas[parScannerInverso] = posicaoRelativaInversa
@@ -135,49 +136,55 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 
 
 [print(x,y) for x,y in posicoesRelativas.items()]
+#[print(x,y) for x,y in permutacoes.items()]
 #print('_________')
 #[print(x,y) for x,y in permutacoes.items()]
 # Preciso preencher o permutações completamente antes de usar abaixo:
 
 #
-permutacoes[(0,4)] = 14
+permutacoes[(0,4)] = permutacoesInversasDeUmaTupla(4)
 #
 #input()
-beaconsFinais = set()
+#beaconsFinais = set()
 qtdScanners = len(listaScanners) 
-while (len([x for x,y in posicoesRelativas.items() if x[0]==0]) < qtdScanners):
+while ( len([x for x,y in posicoesRelativas.items() if x[0]==0] ) < qtdScanners):
 	caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
-	#print('camin_ate_0:',caminhosDescobertosAteOZero)
 	for rota, distancia in caminhosDescobertosAteOZero.items():
 		destino = rota[1]
-		novosCaminhos = {(0,x[1]):
-						
-						somaTuplas(
-							distancia,
-							permutacoesInversasDeUmaTupla(permutacoes[(0,x[0])])(*y)
-						)
-						for x,y in posicoesRelativas.items() if x[0] == destino # }
-															and (0, x[1]) not in posicoesRelativas}
+		novosCaminhos = {}
+		novasPermutacoes = {}
+		for par, delta in posicoesRelativas.items():
+			novoPar = (0, par[1])
+			if par[0] == destino and novoPar not in posicoesRelativas:
+				novosCaminhos[novoPar] = somaTuplas(
+												distancia,
+												permutacoes[(0,par[0])](*delta)
+											)
+		posicoesRelativas.update(novosCaminhos)
+		#print('atualizado:')
+		#[print(x,y) for x,y in posicoesRelativas.items()]
+		#print('___________')
+
 		#print(novosCaminhos)
 		#input()
-		posicoesRelativas.update(novosCaminhos)
+#		posicoesRelativas.update(novosCaminhos)
 #		[print(x,y) for x,y in posicoesRelativas.items()]
 #		input()
 	
-	caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
-	for rota, distancia in caminhosDescobertosAteOZero.items():
-		destino = rota[1]
-		novosCaminhos = {(0,x[0]):
-						
-						diminuiTuplas(
-							permutacoesInversasDeUmaTupla(permutacoes[(0,x[1])])(*y),
-							distancia
-						) 
-						for x,y in posicoesRelativas.items() if x[1] == destino # }
-															and (0, x[0]) not in posicoesRelativas}
+#	caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
+#	for rota, distancia in caminhosDescobertosAteOZero.items():
+#		destino = rota[1]
+#		novosCaminhos = {(0,x[0]):
+#						
+#						diminuiTuplas(
+#							permutacoesInversasDeUmaTupla(permutacoes[(0,x[1])])(*y),
+#							distancia
+#						) 
+#						for x,y in posicoesRelativas.items() if x[1] == destino # }
+#															and (0, x[0]) not in posicoesRelativas}
 		#print('novosembaixo', novosCaminhos)
 		#print(novosCaminhos)
-		posicoesRelativas.update(novosCaminhos)
+#		posicoesRelativas.update(novosCaminhos)
 #		[print(x,y) for x,y in posicoesRelativas.items()]
 #		input()
 #	print('PosicoesRelativas:')
