@@ -95,10 +95,6 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 		numeroDeBeaconsScanner2 = len(l2)
 		for indicePermutacao in range(24):
 			l2P = [permutacoesDeUmaTupla(indicePermutacao)(*x) for x in l2]
-			#l2P.sort()
-			#if (indicePermutacao == 4 and indiceScanner == 0 and indiceScanner2 == 1):
-			#	[print(l1[x], '\t\t', l2[x]) for x in range(25)]
-			#	input()
 			for indicePivot1 in range(numeroDeBeaconsScanner1):
 				for indicePivot2 in range(numeroDeBeaconsScanner2):
 					if parScanner in posicoesRelativas:
@@ -109,20 +105,9 @@ for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar ou
 					l1Relativo = [(x-px, y-py, z-pz) for x, y, z in l1]
 					l2Relativo = [(x-px2, y-py2, z-pz2) for x, y, z in l2P]
 					# Se eles tiverem 12 elementos em comum, achou
-					#if (indicePermutacao == 0 and indiceScanner == 0 and indiceScanner2 == 1 and 
-					#	indicePivot1 == 6 and indicePivot2 == 4):
-					#	print('pivot1', px,py,pz)
-					#	print('pivot2', px2,py2,pz2)
-					#	[print(l1Relativo[x], '\t\t', l2Relativo[x]) for x in range(25)]
-					#	input()
+					
 					elementosEmComum = [x for x in l1Relativo if x in l2Relativo]
 					if len(elementosEmComum)>=12:
-						#print('Achada Interseção!: Scanners: ', parScanner,'Elementos em comum: ',
-						#	 len(elementosEmComum),'Permutação: ', indicePermutacao)
-#						segundoPontoPermutado = (px2,py2,pz2)
-#						segundoPontoOriginal = permutacoesInversasDeUmaTupla(segundoPontoPermutado)[indicePermutacao]
-#						px2o, py2o, pz2o = segundoPontoOriginal
-						#print('É igual?', segundoPontoOriginal, l2[indicePivot2])
 						posicaoRelativa = (px-px2, py-py2, pz-pz2) #Substituir pelo diminui tuplas
 						posicoesRelativas[parScanner] = posicaoRelativa
 						permutacoes[parScanner] = permutacoesInversasDeUmaTupla(indicePermutacao)
@@ -150,7 +135,7 @@ while ( len([x for x,y in posicoesRelativas.items() if x[0]==0] ) < qtdScanners)
 												distancia,
 												permutacoes[(par[0],0)](*delta)
 											)
-				#Eu tinha o 0 a X e de X a Y
+				# Eu tinha o 0 a X e de X a Y
 				# permutação [0, Y] é a função que deve ser aplicada aos elementos de 0 para ficarem iguais aos vistos por Y
 				# ou seja,
 				# Se Y enxerga (1,2,3), aplicamos permutacao(Y,X), significa que o 1,2,3 está permutado corretamente para a visão do X
@@ -160,49 +145,28 @@ while ( len([x for x,y in posicoesRelativas.items() if x[0]==0] ) < qtdScanners)
 				f2 = permutacoes[(par[1],par[0])]
 				funcaoComposta = comporFuncao(f1,f2) 
 				novasPermutacoes[par[1],0] = funcaoComposta
-				#print('_______COMPONDO FUNCOES______')
-				#print ('f1(1,2,3):', f1(1,2,3), 'par',(0,par[0]) )
-				#print ('f2(1,2,3):', f2(1,2,3), 'par',par )
-				#print ('fc(1,2,3):', funcaoComposta(1,2,3), 'par',(par[1],0) )
-				#print('_____________________________')
 				
-				# Se 0 encherga (1,2,3), aplicamos a permutacao (0,X), que é como X ve (1,2,3)
+				# Se 0 enxerga (1,2,3), aplicamos a permutacao (0,X), que é como X ve (1,2,3)
 				# Depois, aplicamos [X,Y] e com isso temos como Y ve (1,2,3)
 				# E isso é como transformamos o de 0 em Y, que é [0,Y]
 				
 				f3 = permutacoes[(0, par[0])]
 				f4 = permutacoes[par]
 				funcaoComposta2 = comporFuncao(f4,f3) 
-				#print('_______COMPONDO FUNCOES______')
-				#print ('f1(1,2,3):', f3(1,2,3), 'par',(par[0], 0) )
-				#print ('f2(1,2,3):', f4(1,2,3), 'par',(par[1],par[0]))
-				#print ('fc(1,2,3):', funcaoComposta2(1,2,3), 'par',(0,par[1]) )
-				#print('_____________________________')
 				novasPermutacoes[novoPar] = funcaoComposta2
 				
 		posicoesRelativas.update(novosCaminhos)
 		permutacoes.update(novasPermutacoes)
-		#print('atualizado:')
-		#[print(x,y) for x,y in posicoesRelativas.items()]
-		#print('___________')
-#[print(x,y) for x,y in posicoesRelativas.items()]
-#[print(x,y) for x,y in posicoesRelativas.items() if x[0] == 0]
-#print('___')
-#[print(x) for x in permutacoes]
+		
 beaconsTotaisReferentesAoZero = set()
 
 for indice, lista in enumerate(listaScanners):
 	funcaoParaEsseScanner = permutacoes[(0, indice)]
 	parIndice = (0,indice)
-	#print('comecando par', parIndice)
 	distanciaAoZero = posicoesRelativas[parIndice]
 	funcaoDeTransformacao = permutacoes[(parIndice[1],parIndice[0])]
-	
 	listaTransformada = [funcaoDeTransformacao(*x) for x in lista]
 	listaTransladada = [somaTuplas(x, distanciaAoZero) for x in listaTransformada]
-
-	
-	#[print(listaScanners[0][i],'\t\t', lista[i],'\t\t', listaTransladada[i] )  for i in range(25)]
 	beaconsTotaisReferentesAoZero.update(listaTransladada)
 print(len(beaconsTotaisReferentesAoZero))
 
@@ -214,10 +178,8 @@ maiorDistancia = 0
 
 for indice1 in range(len(caminhosDescobertosAteOZero)):
 	for indice2 in range(indice1 + 1, len(caminhosDescobertosAteOZero)):
-		#Calcular distancia entre esses dois:
 		d1 = caminhosDescobertosAteOZero[indice1]
 		d2 = caminhosDescobertosAteOZero[indice2]
-		
 		dist = abs(d1[0] - d2[0]) + abs(d1[1] - d2[1]) + abs(d1[2] - d2[2])
 		maiorDistancia = max(maiorDistancia, dist)
 		
