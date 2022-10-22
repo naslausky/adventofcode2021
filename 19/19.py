@@ -1,18 +1,22 @@
-# Desafio do dia 19/12/2021
-def somaTuplas(x,y):
-	x1,x2,x3 = x
-	y1,y2,y3 = y
-	return (x1+y1, x2+y2, x3+y3)
+# Desafio do dia 19/12/2021:
+# a) Receber uma lista de scanners e beacons que possuem interseções e calcular quantos beacons existem.
+# b) Calcular a maior distância entre dois scanners.
 
-def diminuiTuplas(x,y):
-	x1,x2,x3 = x
-	y1,y2,y3 = y
-	return (x1-y1, x2-y2, x3-y3)
+def somaTuplas(x, y): # Função que recebe duas tuplas e calcula a soma elemento a elemento entre eles.
+	x1, x2, x3 = x
+	y1, y2, y3 = y
+	return (x1 + y1, x2 + y2, x3 + y3)
 
-def comporFuncao(f1, f2):
-	return lambda x, y, z: f1 (*f2 (x,y,z))
+def diminuiTuplas(x, y): # Função que recebe duas tuplas e calcula a diferença elemento a elemento.
+	x1, x2, x3 = x
+	y1, y2, y3 = y
+	return (x1 - y1, x2 - y2, x3 - y3)
+
+def comporFuncao(f1, f2): # Função que retorna outra função com a composição de duas funções.
+	return lambda x, y, z: f1( *f2(x,y,z)) # Precisei fazer isso para gerar um novo escopo e evitar um bug.
 	
-def permutacoesDeUmaTupla(indice): #Retorna todas as 24 permutações dos eixos da coordenada tupla.
+def permutacoesDeUmaTupla(indice): 
+	# Função que retorna uma função representando uma das 24 permutações dos eixos.
 	if indice == 0: return lambda x, y, z:(x, y, z)
 	if indice == 1: return lambda x, y, z: (x, -z, y)
 	if indice == 2: return lambda x, y, z: (x, -y, -z)
@@ -39,6 +43,7 @@ def permutacoesDeUmaTupla(indice): #Retorna todas as 24 permutações dos eixos 
 	if indice == 23: return lambda x, y, z: (-z, -x, y)
 
 def permutacoesInversasDeUmaTupla(indice):
+	# Função que retorna uma função representando a inversa da permutação de mesmo índice.
 	if indice == 0: return lambda x, y, z: (x, y, z)
 	if indice == 1: return lambda x, y, z: (x, z, -y)
 	if indice == 2: return lambda x, y, z: (x, -y, -z)
@@ -64,8 +69,7 @@ def permutacoesInversasDeUmaTupla(indice):
 	if indice == 22: return lambda x, y, z: (-z, -y, -x)
 	if indice == 23: return lambda x, y, z: (-y, z, -x)
 
-
-listaScanners = [] # Lista em que cada elemento é uma lista de tuplas contendo a leitura de cada beacon.
+listaScanners = [] # Lista em que cada elemento é uma lista de tuplas contendo a leitura de cada scanner.
 with open('input.txt') as file:
 	linhasBeacons = file.read().split('\n\n')
 	for linhaBeacon in linhasBeacons:
@@ -74,116 +78,105 @@ with open('input.txt') as file:
 							map(int,linha.split(','))) 
 							for linha in linhasDesteBeacon]
 		listaScanners.append(linhasDesteBeacon)	
-resposta = sum([len(x) for x in listaScanners])
 
+# Dicionário que relaciona uma tupla representando o índice de dois scanners e a distância entre eles.
+# Da forma: {(0,1) : (123, 456, 789) ...}
 posicoesRelativas = {}
-permutacoes = {}
 
-for indiceScanner in range(len(listaScanners)): # Para cada Scanner, procurar outro: 
-	for indiceScanner2 in range(indiceScanner+1, len(listaScanners)):
-		parScanner = (indiceScanner, indiceScanner2)
-		listaScanner = listaScanners[indiceScanner]
-		listaSegundoScanner = listaScanners[indiceScanner2]
-		# Verifica se esses dois scanners tem no mínimo 12 em comum:
-		# Precisa fazer isso para cada uma das 24 permutações.
-		# Só permutamos o segundo até esse estar na mesma permutação do primeiro.
-		#print('Testando scanners:', indiceScanner, indiceScanner2)
-		l1 = listaScanner.copy()
-		l1.sort()
-		l2 = listaSegundoScanner.copy()
-		numeroDeBeaconsScanner1 = len(l1)
-		numeroDeBeaconsScanner2 = len(l2)
+# Dicionário que relaciona uma tupla representando o índice de dois scanners e a função que,
+# quando aplicada aos beacons vistos pelo primeiro scanner, converte para os eixos do segundo:
+# Da forma: {(2,3) : lambda } onde lambda(tupla_2) = tupla_3.
+permutacoes = {}
+# A parte 1 do desafio é feita em três etapas: a) Obter as interseções entre os scanners.
+for indiceScanner in range(len(listaScanners)): # Para cada par de Scanners: 
+	for indiceScanner2 in range(indiceScanner + 1, len(listaScanners)):
+		parScanner = (indiceScanner, indiceScanner2) 
+		listaScanner1 = listaScanners[indiceScanner] 
+		listaScanner2 = listaScanners[indiceScanner2]
+		# Verificar se esses dois scanners tem no mínimo 12 elementos em comum:
+		# Tentar encontrá-los para cada uma das 24 permutações.
+		# Só é necessário permutar um deles até este estar na mesma permutação do outro.
+		numeroDeBeaconsScanner1 = len(listaScanner1)
+		numeroDeBeaconsScanner2 = len(listaScanner2)
 		for indicePermutacao in range(24):
-			l2P = [permutacoesDeUmaTupla(indicePermutacao)(*x) for x in l2]
+			listaScanner2Permutada = [permutacoesDeUmaTupla(indicePermutacao)(*x) for x in listaScanner2]
+			# Escolher um elemento de cada lista, e re-criar a lista tendo este ponto como centro.
+			# Se os dois elementos escolhidos forem o mesmo, a variação pros outros também vai ser a mesma.
 			for indicePivot1 in range(numeroDeBeaconsScanner1):
 				for indicePivot2 in range(numeroDeBeaconsScanner2):
-					if parScanner in posicoesRelativas:
-						continue
-					px, py, pz = l1[indicePivot1] # Coordenadas dos pivots:
-					px2, py2, pz2 = l2P[indicePivot2]
-					#Cria novas listas relativas ao pivot especifico:
-					l1Relativo = [(x-px, y-py, z-pz) for x, y, z in l1]
-					l2Relativo = [(x-px2, y-py2, z-pz2) for x, y, z in l2P]
-					# Se eles tiverem 12 elementos em comum, achou
-					
-					elementosEmComum = [x for x in l1Relativo if x in l2Relativo]
-					if len(elementosEmComum)>=12:
-						posicaoRelativa = (px-px2, py-py2, pz-pz2) #Substituir pelo diminui tuplas
+					pivot1 = listaScanner1[indicePivot1]
+					pivot2 = listaScanner2Permutada[indicePivot2]
+					# Cria as novas listas relativas ao pivot especifico:
+					listaScanner1Relativa = [diminuiTuplas(elemento, pivot1) for elemento in listaScanner1]
+					listaScanner2Relativa = [diminuiTuplas(elemento, pivot2) for elemento in listaScanner2Permutada]
+					# Se eles tiverem 12 elementos em comum, achamos uma interseção.
+					elementosEmComum = [1 for elemento in listaScanner1Relativa 
+										if elemento in listaScanner2Relativa]
+					if len(elementosEmComum) >= 12: 
+						# Salvar a distância entre os scanners, bem como a permutação de eixos entre eles.
+						posicaoRelativa = diminuiTuplas(pivot1, pivot2) # Posição entre os dois scanners.
 						posicoesRelativas[parScanner] = posicaoRelativa
 						permutacoes[parScanner] = permutacoesInversasDeUmaTupla(indicePermutacao)
-						
-						#Permutacao[(a,b)] representa a função que precisamos aplicar a A para coincidir com os elementos de B
-						#Fazer de novo mudando o referencial para o outro scanner:  Serve só pra facilitar a segunda parte.
-						#Para isso, primeiramente a distancia é invertida (a-b vira b-a), e em seguida transformamos usando a inversa
-						parScannerInverso = (indiceScanner2, indiceScanner) # Talvez usar o tuple(reversed())
+						# Anotar também o caminho inverso:
+						parScannerInverso = tuple(reversed(parScanner))
 						permutacoes[parScannerInverso] = permutacoesDeUmaTupla(indicePermutacao)
-						posicaoRelativaInversa = (px2-px, py2-py, pz2-pz)
-						posicaoRelativaInversa = permutacoesInversasDeUmaTupla(indicePermutacao)(*posicaoRelativaInversa)
+						posicaoRelativaInversa = diminuiTuplas(pivot2, pivot1)
+						posicaoRelativaInversa = permutacoes[parScanner](*posicaoRelativaInversa)
 						posicoesRelativas[parScannerInverso] = posicaoRelativaInversa
 
-qtdScanners = len(listaScanners) 
-while ( len([x for x,y in posicoesRelativas.items() if x[0]==0] ) < qtdScanners):
-	caminhosDescobertosAteOZero = {x:y for x,y in posicoesRelativas.items() if x[0] == 0}
-	for rota, distancia in caminhosDescobertosAteOZero.items():
-		destino = rota[1]
-		novosCaminhos = {}
-		novasPermutacoes = {}
-		for par, delta in posicoesRelativas.items():
-			novoPar = (0, par[1])
-			if par[0] == destino and novoPar not in posicoesRelativas:
-				novosCaminhos[novoPar] = somaTuplas(
-												distancia,
-												permutacoes[(par[0],0)](*delta)
+# b) Dada as interseções encontradas, obter a transformação entre todos os scanners e um mesmo scanner de referência.
+quantidadeDeScanners = len(listaScanners) 
+while (len([x for x, y in posicoesRelativas.items() if x[0] == 0] ) < quantidadeDeScanners):
+	# Compõe novos caminhos tendo o zero como origem. i.e: Obter (0 -> X) a partir de (0 -> Y) e (Y -> X)
+	# Calcular para esses novos caminhos tanto a permutação quanto a posição relativa. 
+	# Fazer isso até ter no mínimo um caminho de um mesmo scanner (no caso o 0) para todos os outros.
+	caminhosDescobertosAteOZero = { x : y for x, y in posicoesRelativas.items() if x[0] == 0}
+	for caminhoDescoberto, distanciaRelativa in caminhosDescobertosAteOZero.items():
+		novaOrigem = caminhoDescoberto[1] # Buscar por novos caminhos que tem como origem este scanner.
+		novosCaminhos = {} # Cria um novo dicionário pois o principal é o que vai ser iterado. 
+		novasPermutacoes = {} # Idem para as permutações, embora acho que neste caso não precisasse.
+		for parConhecido, delta in posicoesRelativas.items():
+			novoPar = (0, parConhecido[1]) # Novo par a ser obtido após a composição.
+			novoParInvertido = tuple(reversed(novoPar))
+			if parConhecido[0] == novaOrigem and novoPar not in posicoesRelativas: # Significa que é um par que vai incrementar ao nosso dicionário.
+				novosCaminhos[novoPar] = somaTuplas( # A distância (A -> B) é a distância (A -> X) + distância (X -> B).
+												distanciaRelativa, # Poderíamos atualizar também a distância contrária (B -> A), mas aqui não é necessário ao problema, eu acho.
+												permutacoes[(parConhecido[0],0)](*delta)
 											)
-				# Eu tinha o 0 a X e de X a Y
-				# permutação [0, Y] é a função que deve ser aplicada aos elementos de 0 para ficarem iguais aos vistos por Y
-				# ou seja,
-				# Se Y enxerga (1,2,3), aplicamos permutacao(Y,X), significa que o 1,2,3 está permutado corretamente para a visão do X
-				# Com o resultado disso aplicamos permutacao(X,0), significa que o ponto que antigamente Y via agora está para o 0.
-				# Como fizemos um ponto visto por Y convertido para ser visto por 0, significa que isso é o valor de permutacao [Y,0]
-				f1 = permutacoes[(par[0], 0)]
-				f2 = permutacoes[(par[1],par[0])]
-				funcaoComposta = comporFuncao(f1,f2) 
-				novasPermutacoes[par[1],0] = funcaoComposta
 				
-				# Se 0 enxerga (1,2,3), aplicamos a permutacao (0,X), que é como X ve (1,2,3)
-				# Depois, aplicamos [X,Y] e com isso temos como Y ve (1,2,3)
-				# E isso é como transformamos o de 0 em Y, que é [0,Y]
+				funcao1 = permutacoes[(parConhecido[0], 0)] # Funcao1 é a função que aplicada a um elemento visto por parConhecido[0], converte ele para os eixos do Scanner 0.
+				funcao2 = permutacoes[(parConhecido[1], parConhecido[0])] 
+				funcaoComposta = comporFuncao(funcao1,funcao2) # Primeiro aplicamos funcao2, para depois aplicarmos funcao1.
+				novasPermutacoes[novoParInvertido] = funcaoComposta
+				funcao1 = permutacoes[(0, parConhecido[0])] # Fazer o mesmo para o caminho da volta. É necessário pois existem Scanners que só descobrimos relações tendo ele com origem.
+				funcao2 = permutacoes[parConhecido]
+				funcaoComposta = comporFuncao(funcao2, funcao1) # A ordem de aplicação é inversa na volta.
+				novasPermutacoes[novoPar] = funcaoComposta
 				
-				f3 = permutacoes[(0, par[0])]
-				f4 = permutacoes[par]
-				funcaoComposta2 = comporFuncao(f4,f3) 
-				novasPermutacoes[novoPar] = funcaoComposta2
-				
-		posicoesRelativas.update(novosCaminhos)
+		posicoesRelativas.update(novosCaminhos) # Atualizamos os nossos dicionários com as novas composições encontradas.
 		permutacoes.update(novasPermutacoes)
-		
-beaconsTotaisReferentesAoZero = set()
 
-for indice, lista in enumerate(listaScanners):
-	funcaoParaEsseScanner = permutacoes[(0, indice)]
-	parIndice = (0,indice)
-	distanciaAoZero = posicoesRelativas[parIndice]
-	funcaoDeTransformacao = permutacoes[(parIndice[1],parIndice[0])]
-	listaTransformada = [funcaoDeTransformacao(*x) for x in lista]
-	listaTransladada = [somaTuplas(x, distanciaAoZero) for x in listaTransformada]
-	beaconsTotaisReferentesAoZero.update(listaTransladada)
-print(len(beaconsTotaisReferentesAoZero))
+# c) Juntar todos os beacons vistos por todos os scanners, utilizando as transformações encontradas e eliminando os repetidos.
+beaconsTotaisReferentesAoZero = set() # Conjunto que vai conter todos os beacons vistos porém transformados para ter o Scanner 0 como seu referencial.
+for indiceScanner, listaBeacons in enumerate(listaScanners):
+	funcaoParaEsseScanner = permutacoes[(0, indiceScanner)]
+	parIndice = (0, indiceScanner)
+	parIndiceInvertido = tuple(reversed(parIndice))
+	distanciaAoScannerZero = posicoesRelativas[parIndice]
+	funcaoDeTransformacao = permutacoes[parIndiceInvertido] # Talvez se eu tivesse adotado a convenção contrária tivesse ficado mais intuitivo.
+	listaTransformada = [funcaoDeTransformacao(*x) for x in listaBeacons] # Aplica a transformação para adaptar os eixos desse scanner.
+	listaTransladada = [somaTuplas(x, distanciaAoScannerZero) for x in listaTransformada] # Após corrigir os eixos, aplicar a distância para transladar o referencial.
+	beaconsTotaisReferentesAoZero.update(listaTransladada) # Soma ao conjunto esses beacons com a origem ao scanner 0.
+print('O número total de beacons lidos pelos scanners é:', len(beaconsTotaisReferentesAoZero))
 
-
-caminhosDescobertosAteOZero = [y for x,y in posicoesRelativas.items() if x[0] == 0]
-
-
-maiorDistancia = 0
-
-for indice1 in range(len(caminhosDescobertosAteOZero)):
-	for indice2 in range(indice1 + 1, len(caminhosDescobertosAteOZero)):
-		d1 = caminhosDescobertosAteOZero[indice1]
-		d2 = caminhosDescobertosAteOZero[indice2]
-		dist = abs(d1[0] - d2[0]) + abs(d1[1] - d2[1]) + abs(d1[2] - d2[2])
-		maiorDistancia = max(maiorDistancia, dist)
-		
-print(maiorDistancia)
-
-
-
+# Parte 2: Calcular a maior distância existente entre dois scanners.
+caminhosDescobertosAteOZero = [y for x,y in posicoesRelativas.items() if x[0] == 0] # Podemos utilizar o dicionário de posições relativas já preenchido para a parte 1.
+maiorDistancia = 0 # Variável que armazena a maior distância encontrada, e a resposta do problema.
+for indiceScanner1 in range(len(caminhosDescobertosAteOZero)): # Percorre por todos os pares de scanner possíveis.
+	for indiceScanner2 in range(indiceScanner1 + 1, len(caminhosDescobertosAteOZero)):
+		distancia1 = caminhosDescobertosAteOZero[indiceScanner1] 
+		distancia2 = caminhosDescobertosAteOZero[indiceScanner2]
+		distanciaEntreOsScanners = diminuiTuplas(distancia1, distancia2)
+		distanciaEntreOsScanners = sum(abs(distancia) for distancia in distanciaEntreOsScanners)
+		maiorDistancia = max(maiorDistancia, distanciaEntreOsScanners)
+print('A maior distância Manhattan entre dois scanners é:', maiorDistancia)
