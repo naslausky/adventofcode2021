@@ -64,7 +64,7 @@ for blocoInstrucoes in listaBlocosInstrucoes:
 			ZSeguinte = seguirInstrucoes(blocoInstrucoes, zAnterior, proximoDigito)
 			maiorDigitadoSeguinte = maiorDigitadoAteAgora * 10 + proximoDigito
 			menorDigitadoSeguinte = menorDigitadoAteAgora * 10 + proximoDigito
-			_, maiorValorConhecido, menorValorConhecido = proximosValoresDeZ.get(ZSeguinte, (0, 0, 10**9))
+			_, maiorValorConhecido, menorValorConhecido = proximosValoresDeZ.get(ZSeguinte, (0, 0, 10**14))
 			proximosValoresDeZ[ZSeguinte] = (ZSeguinte, 
 								max(maiorValorConhecido, maiorDigitadoSeguinte),
 								min(menorValorConhecido, menorDigitadoSeguinte))
