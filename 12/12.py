@@ -1,3 +1,7 @@
+# Desafio do dia 12/12/2021:
+# a) Receber uma lista de conexões entre nós e calcular quantas formas possíveis existem de chegar a um nó final, começando de um nó inicial.
+# b) Idem porém cada caverna pequena pode ser passada duas vezes.
+
 with open('input.txt') as file:
 	linhas = file.read().splitlines()
 	conexoes = {}
