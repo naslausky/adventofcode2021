@@ -3,7 +3,8 @@
 # b) Idem porém calcular a menor entrada.
 # Atenção: Esta implementação requer um tempo e memória grandes (~25min e 2,5GB).
 
-listaBlocosInstrucoes = [] # Lista em que cada elemento é uma lista com os comandos originais, divididos a cada comando de input. Cada sublista não contém nenhuma instrução de input.
+listaBlocosInstrucoes = [] # Lista em que cada elemento é uma lista com os comandos originais, divididos a cada comando de input.
+# Cada sublista não contém nenhuma instrução de input.
 
 with open('input.txt') as file:
 	instrucoes = file.read().splitlines()
@@ -21,7 +22,7 @@ with open('input.txt') as file:
 
 def seguirInstrucoes(listaInstrucoes, ZAnterior, WDigitado): # Função que retorna o valor do registrador Z após seguir o bloco de instruções dado e o W inserido.
 	registradores = {'x' : 0, 'y' : 0, 'z' : ZAnterior, 'w' : WDigitado}
-	# Após analisar meu input verifiquei que a cada bloco de instruções o Y e o X não fazem diferença para cada bloco de instruções. 
+	# Após analisar meu input verifiquei que a cada bloco de instruções o Y e o X anteriores não fazem influenciam no resultado final. 
 	for instrucao in listaInstrucoes:
 		comando, destino, origem = instrucao
 		valorDestino = registradores[destino]
@@ -53,7 +54,8 @@ def seguirInstrucoes(listaInstrucoes, ZAnterior, WDigitado): # Função que reto
 
 valoresDeZASeremTestados = [(0, 0, 0)] 
 # Lista de valores de Z. Cada elemento é uma tupla que contém o valor atual de Z e os (maior e menor) números digitados para obtê-lo.
-# Essa implementação é uma brute-force que se baseia na descoberta que todos os blocos de códigos não utilizam os valores anteriores de X, Y ou W. Pela quantidade de números salvos, requer bastante tempo e memória (~25 min e um máximo de 2,5GB)
+# Essa implementação é uma brute-force que se baseia na descoberta que todos os blocos de códigos não utilizam os valores anteriores de X, Y ou W. 
+# Pela quantidade de números salvos, requer bastante tempo e memória (~25 min e um máximo de 2,5GB)
 for blocoInstrucoes in listaBlocosInstrucoes:
 	proximosValoresDeZ = {} # Dicionário que relaciona os valores de Z a tupla que representa ele. 
 	# Usado para caso dois valores gerem o mesmo valor Z, salvar só os com menor e maior códigos.
@@ -64,9 +66,9 @@ for blocoInstrucoes in listaBlocosInstrucoes:
 			menorDigitadoSeguinte = menorDigitadoAteAgora * 10 + proximoDigito
 			_, maiorValorConhecido, menorValorConhecido = proximosValoresDeZ.get(ZSeguinte, (0, 0, 10**9))
 			proximosValoresDeZ[ZSeguinte] = (ZSeguinte, 
-											max(maiorValorConhecido, maiorDigitadoSeguinte),
-											min(menorValorConhecido, menorDigitadoSeguinte))
+								max(maiorValorConhecido, maiorDigitadoSeguinte),
+								min(menorValorConhecido, menorDigitadoSeguinte))
 	valoresDeZASeremTestados = list(proximosValoresDeZ.values())
-resposta = [tuplaCodigos for tuplaCodigos in valoresDeZASeremTestados if x[0] == 0][0]
+resposta = [tuplaCodigos for tuplaCodigos in valoresDeZASeremTestados if tuplaCodigos[0] == 0][0]
 print('O maior valor válido a ser inserido é:', resposta[1])
 print('O menor valor válido a ser inserido é:', resposta[2])
